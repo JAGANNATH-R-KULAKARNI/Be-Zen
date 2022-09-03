@@ -19,7 +19,7 @@ const ResponsiveAppBar = () => {
       style={{
         backgroundColor: "white",
         paddingTop: "10px",
-        paddingBottom: "15px",
+        paddingBottom: m1 ? "15px" : "0px",
       }}
       elevation={1}
     >
@@ -43,7 +43,7 @@ const ResponsiveAppBar = () => {
               marginTop: "10px",
             }}
           >
-            <SeacrUI />
+            {/* <SeacrUI /> */}
           </Box>
           {m1 ? (
             <Box sx={{ flexGrow: 0 }}>
@@ -66,7 +66,7 @@ const ResponsiveAppBar = () => {
             marginTop: "10px",
           }}
         >
-          <SeacrUI />{" "}
+          {/* <SeacrUI /> */}
         </div>
       ) : null}
     </AppBar>

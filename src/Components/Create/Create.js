@@ -53,6 +53,7 @@ export default function CreateUI(props) {
         tagline: tagline,
         body: body,
         isPinned: false,
+        time_edited: Date.now(),
       },
     ]);
 
@@ -123,7 +124,7 @@ export default function CreateUI(props) {
                 id="standard-basic"
                 label="Tagline"
                 variant="standard"
-                placeholder="#AutomationTesting"
+                placeholder="AutomationTesting"
                 style={{ minWidth: "100%" }}
                 value={tagline}
                 onChange={(e) => {
