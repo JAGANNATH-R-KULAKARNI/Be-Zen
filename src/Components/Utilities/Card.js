@@ -54,16 +54,12 @@ export default function CardForNote(props) {
       });
 
     if (data) {
-      console.log("Success");
-      console.log(data);
       setMsg("'" + tt + `' has been  ${val ? "Pinned" : "Unpinned"}`);
       setType("success");
       setOpen(true);
     }
 
     if (error) {
-      console.log("Error");
-      console.log(error.message);
       setMsg("Something went wrong :(");
       setType("error");
       setOpen(true);
@@ -78,16 +74,12 @@ export default function CardForNote(props) {
       .match({ id: props.data.id });
 
     if (data) {
-      console.log("Successfully deleted");
-      console.log(data);
       setMsg("'" + tt + `' has been successfully deleted`);
       setType("success");
       setOpen(true);
     }
 
     if (error) {
-      console.log("Error");
-      console.log(error.message);
       setMsg("Something went wrong :(");
       setType("error");
       setOpen(true);
@@ -213,8 +205,6 @@ export default function CardForNote(props) {
                       <Checkbox
                         style={{ paddingLeft: "50px", color: "black" }}
                         onChange={(e) => {
-                          console.log("Checkbox");
-                          console.log(e.target.checked);
                           updatePin(e.target.checked);
                         }}
                         checked={props.data.isPinned}
@@ -297,8 +287,6 @@ export default function CardForNote(props) {
                   <Checkbox
                     style={{ paddingLeft: "50px", color: "black" }}
                     onChange={(e) => {
-                      console.log("Checkbox");
-                      console.log(e.target.checked);
                       updatePin(e.target.checked);
                     }}
                     checked={props.data.isPinned}

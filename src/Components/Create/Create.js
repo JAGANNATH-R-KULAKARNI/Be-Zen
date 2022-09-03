@@ -61,8 +61,6 @@ export default function CreateUI(props) {
     ]);
 
     if (data) {
-      console.log("Data");
-      console.log(data);
       setPosted(true);
       setWait(false);
     }
@@ -70,7 +68,7 @@ export default function CreateUI(props) {
     if (error) {
       setMessage(error.message);
       setErrorAlert(true);
-      console.log(error.message);
+
       setWait(false);
     }
   };

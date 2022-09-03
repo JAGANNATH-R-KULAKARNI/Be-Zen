@@ -12,6 +12,8 @@ export default function Home() {
   const [notes0, setNotes0] = React.useState([]);
   const [notes, setNotes] = React.useState([]);
   const [control, setControl] = React.useState(false);
+  const [count, setCount] = React.useState(0);
+  const [notes2, setNotes2] = React.useState([]);
 
   function timeSince(date) {
     var seconds = Math.floor((new Date() - date) / 1000);
@@ -47,9 +49,6 @@ export default function Home() {
       .order("time_edited", { ascending: false });
 
     if (data) {
-      console.log("Notes");
-      console.log(data);
-
       const temp0 = [];
       const temp = [];
 
@@ -70,16 +69,45 @@ export default function Home() {
           });
         }
       }
-      console.log(temp);
+
+      setCount(
+        Math.floor((temp.length + temp0.length) / 6) +
+          ((temp.length + temp0.length) % 6 ? 1 : 0)
+      );
+
+      var temp2 = [];
+      const temp3 = [];
+      var refe = 0;
+
+      for (var j = 0; j < temp0.length; j++) {
+        if (refe == 6) {
+          temp3.push(temp2);
+          temp2 = [];
+          refe = 0;
+        }
+        refe++;
+        temp2.push(temp0[j]);
+      }
+
+      for (var k = 0; k < temp.length; k++) {
+        if (refe == 6) {
+          temp3.push(temp2);
+          temp2 = [];
+          refe = 0;
+        }
+        refe++;
+        temp2.push(temp[k]);
+      }
+
+      temp3.push(temp2);
+
       setNotes0(temp0);
       setNotes(temp);
-
+      setNotes2(temp3);
       setControl(!control);
     }
 
     if (error) {
-      console.log("Error");
-      console.log(error.message);
     }
   };
 
@@ -107,10 +135,20 @@ export default function Home() {
         <BeginningUI />
       </div>
       <div style={{ marginTop: m1 ? "0px" : "-30px" }}>
-        {control ? (
-          <BlogsUI notes={notes} notes0={notes0} />
+        {control && notes && notes0 && notes2 ? (
+          <BlogsUI
+            notes={notes}
+            notes0={notes0}
+            count={count}
+            notes2={notes2}
+          />
         ) : (
-          <BlogsUI notes={notes} notes0={notes0} />
+          <BlogsUI
+            notes={notes}
+            notes0={notes0}
+            count={count}
+            notes2={notes2}
+          />
         )}
       </div>
     </div>
