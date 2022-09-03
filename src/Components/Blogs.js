@@ -12,7 +12,12 @@ export default function Blogs(props) {
         width: "100%",
       }}
     >
-      <div style={{ width: "100%", paddingLeft: "10%" }}>
+      <div
+        style={{
+          width: "100%",
+          paddingLeft: props.notes.length > 0 ? "10%" : "0%",
+        }}
+      >
         {props.notes &&
           props.notes.map((item) => {
             return (
@@ -23,6 +28,13 @@ export default function Blogs(props) {
               </div>
             );
           })}
+        {props.notes.length == 0 ? (
+          <h1
+            style={{ textAlign: "center", width: "100%", marginTop: "-20px" }}
+          >
+            ** No Blogs Yet **
+          </h1>
+        ) : null}
       </div>
     </div>
   );

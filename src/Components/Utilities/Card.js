@@ -16,13 +16,36 @@ import logo2 from "../Images/logo2.png";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import EditUI from "../Edit/Edit";
 import { supabase } from "../../Supabase";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 export default function CardForNote(props) {
   const m1 = useMediaQuery("(min-width:600px)");
   const [view, setView] = React.useState(false);
   const [edit, setEdit] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [type, setType] = React.useState("success");
+  const [msg, setMsg] = React.useState("");
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   const DeleteNote = async () => {
+    const tt = props.data.title;
+
     const { data, error } = await supabase
       .from("notes")
       .delete()
@@ -31,16 +54,32 @@ export default function CardForNote(props) {
     if (data) {
       console.log("Successfully deleted");
       console.log(data);
+      setMsg("'" + tt + "' has been successfully deleted");
+      setType("success");
+      setOpen(true);
     }
 
     if (error) {
       console.log("Error");
       console.log(error.message);
+      setMsg("Something went wrong :(");
+      setType("error");
+      setOpen(true);
     }
   };
 
   return (
     <div>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleClose} severity={type} sx={{ width: "100%" }}>
+          {msg}
+        </Alert>
+      </Snackbar>
       {edit ? (
         <EditUI editStatusHandler={() => setEdit(!edit)} data={props.data} />
       ) : null}
@@ -73,7 +112,7 @@ export default function CardForNote(props) {
           }}
         >
           <p style={{ color: "#949494", letterSpacing: "0.1em" }}>
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;React is a free and
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
             {view ? props.data.body : props.data.body.substr(0, 255) + "..."}
           </p>
         </div>
@@ -179,6 +218,7 @@ export default function CardForNote(props) {
                     backgroundColor: "white",
                     color: "black",
                   }}
+                  onClick={DeleteNote}
                 >
                   Delete
                 </Button>
@@ -237,6 +277,7 @@ export default function CardForNote(props) {
                 backgroundColor: "white",
                 color: "black",
               }}
+              onClick={DeleteNote}
             >
               Delete
             </Button>
