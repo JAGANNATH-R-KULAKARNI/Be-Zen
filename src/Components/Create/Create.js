@@ -8,11 +8,21 @@ import DialogTitle from "@mui/material/DialogTitle";
 import logo from "../Images/logo.png";
 import TextField from "@mui/material/TextField";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import Alert from "@mui/material/Alert";
+import "./tick.css";
+import { supabase } from "../../Supabase";
 
 export default function CreateUI(props) {
   const [open, setOpen] = React.useState(true);
   const [scroll, setScroll] = React.useState("paper");
   const m1 = useMediaQuery("(min-width:600px)");
+
+  const [heading, setHeading] = React.useState("");
+  const [tagline, setTagline] = React.useState("");
+  const [body, setBody] = React.useState("");
+  const [errorAlert, setErrorAlert] = React.useState("");
+  const [posted, setPosted] = React.useState(false);
+  const [wait, setWait] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -20,6 +30,7 @@ export default function CreateUI(props) {
   };
 
   const descriptionElementRef = React.useRef(null);
+
   React.useEffect(() => {
     if (open) {
       const { current: descriptionElement } = descriptionElementRef;
@@ -28,6 +39,34 @@ export default function CreateUI(props) {
       }
     }
   }, [open]);
+
+  const postTheNote = async () => {
+    if (heading.length == 0 || tagline.length == 0 || body.length == 0) {
+      setErrorAlert(true);
+      return;
+    }
+
+    setWait(true);
+    const { data, error } = await supabase.from("notes").insert([
+      {
+        title: heading,
+        tagline: tagline,
+        body: body,
+        isPinned: false,
+      },
+    ]);
+
+    if (data) {
+      console.log("Data");
+      console.log(data);
+      setPosted(true);
+      setWait(false);
+    }
+
+    if (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <div>
@@ -50,56 +89,122 @@ export default function CreateUI(props) {
           </div>
         </DialogTitle>
         <DialogContent dividers={scroll === "paper"}>
-          <DialogContentText
-            id="scroll-dialog-description"
-            ref={descriptionElementRef}
-            tabIndex={-1}
-          >
-            <TextField
-              id="standard-basic"
-              label="Author Name"
-              variant="standard"
-              placeholder="Jagannath R K"
-              style={{ minWidth: "100%" }}
-            />
-            <br />
-            <br />
-            <TextField
-              id="standard-basic"
-              label="Heading"
-              variant="standard"
-              placeholder="A Note On Automation"
-              style={{ minWidth: "100%" }}
-            />
-            <br />
-            <br />
-            <TextField
-              id="standard-basic"
-              label="Tagline"
-              variant="standard"
-              placeholder="#AutomationTesting"
-              style={{ minWidth: "100%" }}
-            />
+          {!posted ? (
+            <DialogContentText
+              id="scroll-dialog-description"
+              ref={descriptionElementRef}
+              tabIndex={-1}
+            >
+              {errorAlert ? (
+                <Alert
+                  onClose={() => {
+                    setErrorAlert(false);
+                  }}
+                  severity="error"
+                >
+                  {m1 ? "All the fields must be filled" : "Fill all the fields"}
+                </Alert>
+              ) : null}
 
-            <TextField
-              id="outlined-multiline-static"
-              label="Body"
-              multiline
-              rows={4}
-              style={{ minWidth: "100%", marginTop: "40px" }}
-              placeholder="Test automation is the practice of automatically reviewing and validating a software product"
-            />
-          </DialogContentText>
+              <TextField
+                id="standard-basic"
+                label="Heading"
+                variant="standard"
+                placeholder="A Note On Automation"
+                style={{ minWidth: "100%", marginTop: "10px" }}
+                value={heading}
+                onChange={(e) => {
+                  setHeading(e.target.value);
+                }}
+              />
+              <br />
+              <br />
+              <TextField
+                id="standard-basic"
+                label="Tagline"
+                variant="standard"
+                placeholder="#AutomationTesting"
+                style={{ minWidth: "100%" }}
+                value={tagline}
+                onChange={(e) => {
+                  setTagline(e.target.value);
+                }}
+              />
+
+              <TextField
+                id="outlined-multiline-static"
+                label="Body"
+                multiline
+                rows={4}
+                style={{ minWidth: "100%", marginTop: "40px" }}
+                placeholder="Test automation is the practice of automatically reviewing and validating a software product"
+                value={body}
+                onChange={(e) => {
+                  setBody(e.target.value);
+                }}
+              />
+            </DialogContentText>
+          ) : (
+            <DialogContentText
+              id="scroll-dialog-description"
+              ref={descriptionElementRef}
+              tabIndex={-1}
+            >
+              <div style={{ minWidth: "100%" }}>
+                <svg
+                  className="checkmark"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 52 52"
+                >
+                  <circle
+                    className="checkmark__circle"
+                    cx="26"
+                    cy="26"
+                    r="25"
+                    fill="none"
+                  />
+                  <path
+                    className="checkmark__check"
+                    fill="none"
+                    d="M14.1 27.2l7.1 7.2 16.7-16.8"
+                  />
+                </svg>
+                <h2
+                  style={{
+                    minWidth: m1 ? "500px" : "100%",
+                    color: "black",
+                    fontFamily: "inherit",
+                    marginTop: "25px",
+                    textAlign: "center",
+                  }}
+                >
+                  Successfully Posted
+                </h2>
+              </div>
+            </DialogContentText>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} style={{ color: "black" }}>
-            Discard
+            {posted ? "Close" : "Discard"}
           </Button>
           <Button
-            onClick={handleClose}
+            onClick={
+              wait
+                ? null
+                : posted
+                ? () => {
+                    setBody("");
+                    setTagline("");
+                    setHeading("");
+                    setErrorAlert(false);
+                    setPosted(false);
+                  }
+                : postTheNote
+            }
             style={{ backgroundColor: "black", color: "white" }}
           >
-            Post
+            {wait ? "Wait..." : posted ? "Post Another" : "Post"}
           </Button>
         </DialogActions>
       </Dialog>
