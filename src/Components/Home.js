@@ -9,6 +9,7 @@ import { supabase } from "../Supabase";
 
 export default function Home() {
   const m1 = useMediaQuery("(min-width:600px)");
+  const [notes0, setNotes0] = React.useState([]);
   const [notes, setNotes] = React.useState([]);
   const [control, setControl] = React.useState(false);
 
@@ -48,6 +49,8 @@ export default function Home() {
     if (data) {
       console.log("Notes");
       console.log(data);
+
+      const temp0 = [];
       const temp = [];
 
       for (var i = 0; i < data.length; i++) {
@@ -55,13 +58,22 @@ export default function Home() {
           new Date(Date.now() - (Date.now() - parseInt(data[i].time_edited)))
         );
 
-        temp.push({
-          ...data[i],
-          time_edited: tt,
-        });
+        if (data[i].isPinned) {
+          temp0.push({
+            ...data[i],
+            time_edited: tt,
+          });
+        } else {
+          temp.push({
+            ...data[i],
+            time_edited: tt,
+          });
+        }
       }
       console.log(temp);
+      setNotes0(temp0);
       setNotes(temp);
+
       setControl(!control);
     }
 
@@ -95,7 +107,11 @@ export default function Home() {
         <BeginningUI />
       </div>
       <div style={{ marginTop: m1 ? "0px" : "-30px" }}>
-        {control ? <BlogsUI notes={notes} /> : <BlogsUI notes={notes} />}
+        {control ? (
+          <BlogsUI notes={notes} notes0={notes0} />
+        ) : (
+          <BlogsUI notes={notes} notes0={notes0} />
+        )}
       </div>
     </div>
   );

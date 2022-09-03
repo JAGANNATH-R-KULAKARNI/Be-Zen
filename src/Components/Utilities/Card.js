@@ -40,6 +40,35 @@ export default function CardForNote(props) {
     setOpen(false);
   };
 
+  const updatePin = async (val) => {
+    const tt = props.data.title;
+
+    const { data, error } = await supabase
+      .from("notes")
+      .update({
+        isPinned: val,
+        time_edited: Date.now(),
+      })
+      .match({
+        id: props.data.id,
+      });
+
+    if (data) {
+      console.log("Success");
+      console.log(data);
+      setMsg("'" + tt + `' has been  ${val ? "Pinned" : "Unpinned"}`);
+      setType("success");
+      setOpen(true);
+    }
+
+    if (error) {
+      console.log("Error");
+      console.log(error.message);
+      setMsg("Something went wrong :(");
+      setType("error");
+      setOpen(true);
+    }
+  };
   const DeleteNote = async () => {
     const tt = props.data.title;
 
@@ -51,7 +80,7 @@ export default function CardForNote(props) {
     if (data) {
       console.log("Successfully deleted");
       console.log(data);
-      setMsg("'" + tt + "' has been successfully deleted");
+      setMsg("'" + tt + `' has been successfully deleted`);
       setType("success");
       setOpen(true);
     }
@@ -82,12 +111,15 @@ export default function CardForNote(props) {
       ) : null}
       <Paper style={{ width: "90%", borderRadius: "20px" }} elevation={5}>
         <div style={{ display: "flex", justifyContent: "left" }}>
-          <PushPinIcon style={{ fontSize: "50px", marginTop: "5px" }} />
+          {props.data.isPinned ? (
+            <PushPinIcon style={{ fontSize: "50px", marginTop: "5px" }} />
+          ) : null}
 
           <p
             style={{
               color: "#949494",
               fontFamily: "monospace",
+              marginLeft: props.data.isPinned ? "10px" : "40px",
             }}
           >
             Last Edited -{" "}
@@ -179,14 +211,19 @@ export default function CardForNote(props) {
                   <FormControlLabel
                     control={
                       <Checkbox
-                        defaultChecked
                         style={{ paddingLeft: "50px", color: "black" }}
+                        onChange={(e) => {
+                          console.log("Checkbox");
+                          console.log(e.target.checked);
+                          updatePin(e.target.checked);
+                        }}
+                        checked={props.data.isPinned}
                       />
                     }
                     label={
                       <p style={{ fontFamily: "inherit", fontWeight: 700 }}>
                         {" "}
-                        Pin
+                        {props.data.isPinned ? "Unpin" : "Pin"}
                       </p>
                     }
                     style={{ fontFamily: "inherit" }}
@@ -258,8 +295,13 @@ export default function CardForNote(props) {
               <FormControlLabel
                 control={
                   <Checkbox
-                    defaultChecked
                     style={{ paddingLeft: "50px", color: "black" }}
+                    onChange={(e) => {
+                      console.log("Checkbox");
+                      console.log(e.target.checked);
+                      updatePin(e.target.checked);
+                    }}
+                    checked={props.data.isPinned}
                   />
                 }
                 label={

@@ -15,9 +15,20 @@ export default function Blogs(props) {
       <div
         style={{
           width: "100%",
-          paddingLeft: props.notes.length > 0 ? "10%" : "0%",
+          paddingLeft:
+            props.notes.length > 0 || props.notes0.length > 0 ? "10%" : "0%",
         }}
       >
+        {props.notes0 &&
+          props.notes0.map((item) => {
+            return (
+              <div key={item}>
+                <CardUI data={item} />
+                <br />
+                <br />
+              </div>
+            );
+          })}
         {props.notes &&
           props.notes.map((item) => {
             return (
@@ -28,7 +39,7 @@ export default function Blogs(props) {
               </div>
             );
           })}
-        {props.notes.length == 0 ? (
+        {props.notes0.length == 0 && props.notes.length == 0 ? (
           <h1
             style={{ textAlign: "center", width: "100%", marginTop: "-20px" }}
           >
