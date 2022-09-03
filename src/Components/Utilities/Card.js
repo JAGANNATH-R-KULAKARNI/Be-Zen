@@ -25,15 +25,12 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 export default function CardForNote(props) {
   const m1 = useMediaQuery("(min-width:600px)");
+
   const [view, setView] = React.useState(false);
   const [edit, setEdit] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [type, setType] = React.useState("success");
   const [msg, setMsg] = React.useState("");
-
-  const handleClick = () => {
-    setOpen(true);
-  };
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -86,7 +83,24 @@ export default function CardForNote(props) {
       <Paper style={{ width: "90%", borderRadius: "20px" }} elevation={5}>
         <div style={{ display: "flex", justifyContent: "left" }}>
           <PushPinIcon style={{ fontSize: "50px", marginTop: "5px" }} />
-          <p style={{ color: "#949494" }}>Lat Edited - oaklslslls</p>
+
+          <p
+            style={{
+              color: "#949494",
+              fontFamily: "monospace",
+            }}
+          >
+            Last Edited -{" "}
+            <span
+              style={{
+                fontWeight: 900,
+                fontSize: "15px",
+                fontFamily: "monospace",
+              }}
+            >
+              {props.data.time_edited ? props.data.time_edited : null} ago
+            </span>
+          </p>
         </div>
         <h1
           style={{

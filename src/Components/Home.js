@@ -10,6 +10,34 @@ import { supabase } from "../Supabase";
 export default function Home() {
   const m1 = useMediaQuery("(min-width:600px)");
   const [notes, setNotes] = React.useState([]);
+  const [control, setControl] = React.useState(false);
+
+  function timeSince(date) {
+    var seconds = Math.floor((new Date() - date) / 1000);
+
+    var interval = seconds / 31536000;
+
+    if (interval > 1) {
+      return Math.floor(interval) + " years";
+    }
+    interval = seconds / 2592000;
+    if (interval > 1) {
+      return Math.floor(interval) + " months";
+    }
+    interval = seconds / 86400;
+    if (interval > 1) {
+      return Math.floor(interval) + " days";
+    }
+    interval = seconds / 3600;
+    if (interval > 1) {
+      return Math.floor(interval) + " hours";
+    }
+    interval = seconds / 60;
+    if (interval > 1) {
+      return Math.floor(interval) + " minutes";
+    }
+    return Math.floor(seconds) + " seconds";
+  }
 
   const getNotes = async () => {
     const { data, error } = await supabase
@@ -20,7 +48,21 @@ export default function Home() {
     if (data) {
       console.log("Notes");
       console.log(data);
-      setNotes(data);
+      const temp = [];
+
+      for (var i = 0; i < data.length; i++) {
+        var tt = timeSince(
+          new Date(Date.now() - (Date.now() - parseInt(data[i].time_edited)))
+        );
+
+        temp.push({
+          ...data[i],
+          time_edited: tt,
+        });
+      }
+      console.log(temp);
+      setNotes(temp);
+      setControl(!control);
     }
 
     if (error) {
@@ -53,7 +95,7 @@ export default function Home() {
         <BeginningUI />
       </div>
       <div style={{ marginTop: m1 ? "0px" : "-30px" }}>
-        <BlogsUI notes={notes} />
+        {control ? <BlogsUI notes={notes} /> : <BlogsUI notes={notes} />}
       </div>
     </div>
   );
