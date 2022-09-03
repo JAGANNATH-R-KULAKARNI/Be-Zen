@@ -11,7 +11,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Alert from "@mui/material/Alert";
 import "./tick.css";
 import { supabase } from "../../Supabase";
-import { Fab } from "@mui/material";
 
 export default function CreateUI(props) {
   const [open, setOpen] = React.useState(true);
@@ -28,11 +27,16 @@ export default function CreateUI(props) {
 
   const handleClose = () => {
     setOpen(false);
-    props.createStatusHandler();
+    props.editStatusHandler();
   };
 
   const descriptionElementRef = React.useRef(null);
 
+  React.useEffect(() => {
+    setHeading(props.data.title);
+    setTagline(props.data.tagline);
+    setBody(props.data.body);
+  }, []);
   React.useEffect(() => {
     if (open) {
       const { current: descriptionElement } = descriptionElementRef;
@@ -50,15 +54,18 @@ export default function CreateUI(props) {
     }
 
     setWait(true);
-    const { data, error } = await supabase.from("notes").insert([
-      {
+    const { data, error } = await supabase
+      .from("notes")
+      .update({
         title: heading,
         tagline: tagline,
         body: body,
-        isPinned: false,
+        isPinned: props.data.isPinned,
         time_edited: Date.now(),
-      },
-    ]);
+      })
+      .match({
+        id: props.data.id,
+      });
 
     if (data) {
       console.log("Data");
@@ -185,7 +192,7 @@ export default function CreateUI(props) {
                     textAlign: "center",
                   }}
                 >
-                  Successfully Posted
+                  Successfully Edited
                 </h2>
               </div>
             </DialogContentText>
@@ -193,7 +200,7 @@ export default function CreateUI(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} style={{ color: "black" }}>
-            {posted ? "Close" : "Discard"}
+            {"Close"}
           </Button>
           <Button
             onClick={
@@ -201,17 +208,14 @@ export default function CreateUI(props) {
                 ? null
                 : posted
                 ? () => {
-                    setBody("");
-                    setTagline("");
-                    setHeading("");
-                    setErrorAlert(false);
                     setPosted(false);
+                    setWait(false);
                   }
                 : postTheNote
             }
             style={{ backgroundColor: "black", color: "white" }}
           >
-            {wait ? "Wait..." : posted ? "Post Another" : "Post"}
+            {wait ? "Wait..." : posted ? "Edit Again" : "Edit"}
           </Button>
         </DialogActions>
       </Dialog>

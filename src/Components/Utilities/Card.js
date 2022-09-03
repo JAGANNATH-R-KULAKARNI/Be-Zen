@@ -14,13 +14,36 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import logo2 from "../Images/logo2.png";
 import PushPinIcon from "@mui/icons-material/PushPin";
+import EditUI from "../Edit/Edit";
+import { supabase } from "../../Supabase";
 
 export default function CardForNote(props) {
   const m1 = useMediaQuery("(min-width:600px)");
   const [view, setView] = React.useState(false);
+  const [edit, setEdit] = React.useState(false);
+
+  const DeleteNote = async () => {
+    const { data, error } = await supabase
+      .from("notes")
+      .delete()
+      .match({ id: props.data.id });
+
+    if (data) {
+      console.log("Successfully deleted");
+      console.log(data);
+    }
+
+    if (error) {
+      console.log("Error");
+      console.log(error.message);
+    }
+  };
 
   return (
     <div>
+      {edit ? (
+        <EditUI editStatusHandler={() => setEdit(!edit)} data={props.data} />
+      ) : null}
       <Paper style={{ width: "90%", borderRadius: "20px" }} elevation={5}>
         <div style={{ display: "flex", justifyContent: "left" }}>
           <PushPinIcon style={{ fontSize: "50px", marginTop: "5px" }} />
@@ -142,6 +165,7 @@ export default function CardForNote(props) {
                     backgroundColor: "black",
                     color: "white",
                   }}
+                  onClick={() => setEdit(!edit)}
                 >
                   Edit
                 </Button>
@@ -225,6 +249,7 @@ export default function CardForNote(props) {
                 backgroundColor: "black",
                 color: "white",
               }}
+              onClick={() => setEdit(!edit)}
             >
               Edit
             </Button>
