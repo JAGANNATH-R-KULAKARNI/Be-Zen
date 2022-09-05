@@ -71,6 +71,25 @@ export default function Blogs(props) {
           ) : null}
         </div>
       </div>
+      <br />
+      <br />
+      <br />
+      {props.notes.length > 0 || props.notes0.length > 0 ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: m1 ? "-50px" : "-40px",
+          }}
+        >
+          <Pagination
+            count={props.count}
+            color="secondary"
+            page={page}
+            onChange={handleChange}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
